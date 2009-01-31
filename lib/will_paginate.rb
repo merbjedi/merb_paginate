@@ -31,11 +31,6 @@ module WillPaginate
   end
 end
 
-if defined?(Rails)
-  require 'will_paginate/view_helpers/action_view' if defined?(ActionController)
-  require 'will_paginate/finders/active_record'    if defined?(ActiveRecord)
-end
-
 if defined?(Merb::Plugins)
   require 'will_paginate/view_helpers/merb'
   # auto-load the right ORM adapter

@@ -30,4 +30,6 @@ class Array
       pager.replace self[pager.offset, pager.per_page].to_a
     end
   end
+  
+  alias :total_entries :size
 end

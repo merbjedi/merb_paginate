@@ -1,70 +1,59 @@
 require 'rubygems'
-begin
-  hanna_dir = '/Users/mislav/Projects/Hanna/lib'
-  $:.unshift hanna_dir if File.exists? hanna_dir
-  require 'hanna/rdoctask'
-rescue LoadError
-  require 'rake'
-  require 'rake/rdoctask'
-end
+require 'rake/gempackagetask'
+
+require 'merb-core'
+require 'merb-core/tasks/merb'
+
 load 'spec/tasks.rake'
 
 desc 'Default: run specs.'
 task :default => :spec
 
-desc 'Generate RDoc documentation for the will_paginate plugin.'
-Rake::RDocTask.new(:rdoc) do |rdoc|
-  rdoc.rdoc_files.include('README.rdoc', 'LICENSE', 'CHANGELOG.rdoc').
-    include('lib/**/*.rb').
-    exclude('lib/will_paginate/finders/active_record/named_scope*').
-    exclude('lib/will_paginate/finders/sequel.rb').
-    exclude('lib/will_paginate/view_helpers/merb.rb').
-    exclude('lib/will_paginate/deprecation.rb').
-    exclude('lib/will_paginate/core_ext.rb').
-    exclude('lib/will_paginate/version.rb')
+GEM_NAME = "merb_paginate"
+GEM_VERSION = "0.9.0"
+AUTHORS = ['Jacques Crocker', 'Mislav Marohnić', 'PJ Hyett']
+EMAIL = 'merbjedi@gmail.com'
+HOMEPAGE = 'http://github.com/merbjedi/merb_paginate'
+SUMMARY = "merb_paginate is a fork of will_paginate agnostic branch, refocused to work specifically with Merb"
+
+spec = Gem::Specification.new do |s|
+  s.rubyforge_project = 'merb'
+  s.name = GEM_NAME
+  s.version = GEM_VERSION
+  s.platform = Gem::Platform::RUBY
+  s.has_rdoc = true
+  s.extra_rdoc_files = ["README.rdoc", "LICENSE"]
+  s.summary = SUMMARY
+  s.description = s.summary
+  s.authors = AUTHORS
+  s.email = EMAIL
+  s.homepage = HOMEPAGE
   
-  rdoc.main = "README.rdoc" # page to start on
-  rdoc.title = "will_paginate documentation"
-  
-  rdoc.rdoc_dir = 'doc' # rdoc output folder
-  rdoc.options << '--inline-source' << '--charset=UTF-8'
-  rdoc.options << '--webcvs=http://github.com/mislav/will_paginate/tree/master/'
+  s.add_dependency('merb-core', '>= 1.0')
+
+  s.require_path = 'lib'
+  s.files = %w(LICENSE README.rdoc CHANGELOG.rdoc Rakefile) + Dir.glob("{lib,spec}/**/*")
 end
 
-desc %{Update ".manifest" with the latest list of project filenames. Respect\
-.gitignore by excluding everything that git ignores. Update `files` and\
-`test_files` arrays in "*.gemspec" file if it's present.}
-task :manifest do
-  list = Dir['**/*'].sort
-  spec_file = Dir['*.gemspec'].first
-  list -= [spec_file] if spec_file
-  
-  ignores = File.read('.gitignore').to_a
-  ignores << 'website'
-  
-  ignores.each do |glob|
-    glob = glob.chomp.sub(/^\//, '')
-    list -= Dir[glob]
-    list -= Dir["#{glob}/**/*"] if File.directory?(glob) and !File.symlink?(glob)
-    puts "excluding #{glob}"
-  end
-
-  if spec_file
-    spec = File.read spec_file
-    spec.gsub! /^(\s* s.(test_)?files \s* = \s* )( \[ [^\]]* \] | %w\( [^)]* \) )/mx do
-      assignment = $1
-      bunch = $2 ? list.grep(/^(test|spec)\//) : list
-      '%s%%w(%s)' % [assignment, bunch.join(' ')]
-    end
-      
-    File.open(spec_file, 'w') {|f| f << spec }
-  end
-  File.open('.manifest', 'w') {|f| f << list.join("\n") }
+Rake::GemPackageTask.new(spec) do |pkg|
+  pkg.gem_spec = spec
 end
 
-task :website do
-  Dir.chdir('website') do
-    %x(haml index.haml index.html)
-    %x(sass pagination.sass pagination.css)
+desc "install the plugin as a gem"
+task :install do
+  Merb::RakeHelper.install(GEM_NAME, :version => GEM_VERSION)
+end
+
+desc "Uninstall the gem"
+task :uninstall do
+  Merb::RakeHelper.uninstall(GEM_NAME, :version => GEM_VERSION)
+end
+
+desc "Create a gemspec file"
+task :gemspec do
+  File.open("#{GEM_NAME}.gemspec", "w") do |file|
+    file.puts spec.to_ruby
   end
 end
+
+require 'lib/merbtasks'

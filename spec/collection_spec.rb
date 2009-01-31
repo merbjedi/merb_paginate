@@ -10,7 +10,7 @@ describe WillPaginate::Collection do
   it "should be a subset of original collection" do
     @simple.paginate(:page => 1, :per_page => 3).should == %w( a b c )
   end
-
+  
   it "can be shorter than per_page if on last page" do
     @simple.paginate(:page => 2, :per_page => 3).should == %w( d e )
   end

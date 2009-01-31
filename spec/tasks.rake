@@ -12,7 +12,7 @@ Spec::Rake::SpecTask.new(:spec) do |t|
 end
 
 namespace :spec do
-  desc 'Run specs for core, ActiveRecord and ActionView'
+  desc 'Run specs for core, ActiveRecord'
   Spec::Rake::SpecTask.new(:rails) do |t|
     t.libs << 'lib' << 'spec'
     t.spec_opts = ['--options', spec_opts]
