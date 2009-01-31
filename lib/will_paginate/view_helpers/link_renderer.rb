@@ -38,7 +38,7 @@ module WillPaginate
           attributes = @options.except *(WillPaginate::ViewHelpers.pagination_options.keys - [:class])
           # pagination of Post models will have the ID of "posts_pagination"
           if @options[:container] and @options[:id] === true
-            attributes[:id] = @collection.first.class.name.underscore.pluralize + '_pagination'
+            attributes[:id] = @collection.first.class.name.snake_case.pluralize + '_pagination'
           end
           attributes
         end

@@ -25,18 +25,8 @@ module WillPaginate
     # Overrides the default +pagination_options+
     def self.pagination_options=(value) @pagination_options = value; end
     
-    self.pagination_options = {
-      :class          => 'pagination',
-      :previous_label => '&laquo; Previous',
-      :next_label     => 'Next &raquo;',
-      :inner_window   => 4, # links around the current page
-      :outer_window   => 1, # links around beginning and end
-      :separator      => ' ', # single space is friendly to spiders and non-graphic browsers
-      :param_name     => :page,
-      :params         => nil,
-      :renderer       => 'WillPaginate::ViewHelpers::LinkRenderer',
-      :page_links     => true,
-      :container      => true
-    }
+    def self.pagination_options
+      Merb::Plugins.config[:paging] || {}
+    end 
   end
 end

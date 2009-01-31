@@ -41,7 +41,6 @@ module WillPaginate
       def will_paginate(collection, options = {})
         # early exit if there is nothing to render
         return nil unless collection.total_pages > 1
-        
         options = WillPaginate::ViewHelpers.pagination_options.merge(options)
         
         if options[:prev_label]
@@ -52,7 +51,7 @@ module WillPaginate
         # get the renderer instance
         renderer = case options[:renderer]
         when String
-          options[:renderer].constantize.new
+          Object.full_const_get(options[:renderer]).new
         when Class
           options[:renderer].new
         else
@@ -86,7 +85,7 @@ module WillPaginate
       # text output by passing <tt>:html => false</tt> in options.
       def page_entries_info(collection, options = {})
         entry_name = options[:entry_name] || (collection.empty?? 'entry' :
-                     collection.first.class.name.underscore.gsub('_', ' '))
+                     collection.first.class.name.snake_case.gsub('_', ' '))
         
         plural_name = if options[:plural_name]
           options[:plural_name]

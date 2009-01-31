@@ -1,3 +1,9 @@
+== merb_paginate
+* Repackaged as a merb-only plugin
+* Removed the Rails "cruft"
+* Packaged as its own gem
+* Now uses Merb::Plugins.config properly to set default Paging 
+
 == "agnostic" branch
 
 * added Sequel support
